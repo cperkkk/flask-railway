@@ -136,7 +136,6 @@ def index():
             L_pos += pos_value
         else:
             pos_type = '🔴 SHORT'
-            L_pos -= pos_value
             S_pos += pos_value
         
         # Format PnL display
