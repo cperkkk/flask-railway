@@ -32,7 +32,7 @@ def index():
         if sign == -1:
             yo = ((pos_value + total_asset_value) / position)
             return yo
-    
+    st = ''
     st += (f'ACC VALUE {total_asset_value:,.2f}')
     st += '\n<br>'
     L_pos = 0
