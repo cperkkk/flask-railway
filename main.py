@@ -47,6 +47,19 @@ def has_positions_changed(current_positions, cached_positions):
     
     return False
 
+def get_position_change_indicator(symbol, current_count, cached_positions):
+    """Get indicator showing position change from cache"""
+    if symbol not in cached_positions:
+        return ' 🆕'  # New position
+    
+    cached_count = cached_positions[symbol]
+    if current_count > cached_count:
+        return ' ⬆️'  # Position increased
+    elif current_count < cached_count:
+        return ' ⬇️'  # Position decreased
+    else:
+        return ''  # No change
+
 def send_to_telegram_topic(message, chat_id, topic_id, bot_token):
     """Send a message to a specific topic in a Telegram group"""
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
@@ -122,6 +135,9 @@ def index():
         
         # Track current position count
         current_positions[symbol] = position
+        
+        # Get position change indicator
+        change_indicator = get_position_change_indicator(symbol, position, cached_positions)
     
         curr_price = pos_value / position
         liq_price = calc_liq_price(curr_price, position, pos_value, total_asset_value, sign)
@@ -142,13 +158,31 @@ def index():
         pnl_emoji = '📈' if pnl >= 0 else '📉'
         pnl_sign = '+' if pnl >= 0 else ''
         
-        st += f'<b>{pos_type} {symbol}</b>\n'
+        st += f'<b>{pos_type} {symbol}{change_indicator}</b>\n'
         st += f'├ Entry: ${entry:,.2f}\n'
         st += f'├ Current: ${curr_price:,.2f}\n'
-        st += f'├ Count: {position:,.2f}\n'
+        st += f'├ Count: {position:,.2f}'
+        
+        # Add previous count info if position changed
+        if symbol in cached_positions and cached_positions[symbol] != position:
+            st += f' (was: {cached_positions[symbol]:,.2f})'
+        
+        st += '\n'
         st += f'├ Value: ${pos_value:,.2f}\n'
         st += f'├ PnL: {pnl_emoji} {pnl_sign}${pnl:,.2f} ({pnl_sign}{pnl_percent:.2f}%)\n'
         st += f'└ Liquidation: ${liq_price:,.2f}\n\n'
+    
+    # Check for closed positions
+    closed_positions = []
+    for symbol in cached_positions:
+        if symbol not in current_positions:
+            closed_positions.append(symbol)
+    
+    if closed_positions:
+        st += '<b>❌ Closed Positions:</b>\n'
+        for symbol in closed_positions:
+            st += f'├ {symbol} (was: {cached_positions[symbol]:,.2f})\n'
+        st += '\n'
     
     # Add summary section
     st += '━━━━━━━━━━━━━━━━━━━━━━\n'
