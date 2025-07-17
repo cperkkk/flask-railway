@@ -278,7 +278,7 @@ def index_pre():
     d_ff = defaultdict(lambda:0)
     for pos in active_positions2:
         symbol = pos['symbol']
-        pos_value = pos['position_value']
+        pos_value = float(pos['position_value'])
         d_ff[symbol] = pos_value / total_asset_value2
         
     for pos in active_positions:
