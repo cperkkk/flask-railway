@@ -234,7 +234,7 @@ def index_pre():
 
     data2 = y
     j2 = json.loads(data2)
-    account2 = j['accounts'][0]
+    account2 = j2['accounts'][0]
     positions2 = account2['positions']
     total_asset_value2 = float(account2['total_asset_value'])
 
