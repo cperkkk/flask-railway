@@ -235,7 +235,7 @@ def index_pre():
     data2 = y
     j2 = json.loads(data2)
     account2 = j['accounts'][0]
-    positions2 = accounts2['positions']
+    positions2 = account2['positions']
     total_asset_value2 = float(account2['total_asset_value'])
 
     def calc_leverage(imf):
@@ -272,7 +272,7 @@ def index_pre():
     active_positions2 = []
     for pos in positions2:
         position2 = float(pos['position'])
-        if position != 0:
+        if position2 != 0:
             active_positions2.append(pos)
 
     d_ff = defaultdict(lambda:0)
