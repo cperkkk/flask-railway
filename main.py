@@ -89,7 +89,6 @@ def index():
     positions = account['positions']
     total_asset_value = float(account['total_asset_value'])
 
-    personal_total_asset_value = float(json.loads(y)['accounts'][0]['total_asset_value'])
 
     def calc_leverage(imf):
         return 1 / (float(imf) / 100)
@@ -222,7 +221,7 @@ def index():
 
 
 @app.route('/pre')
-def index_personal():
+def index_pre():
     x = requests.get('https://mainnet.zklighter.elliot.ai/api/v1/account?by=index&value=484').content
 
     data = x
