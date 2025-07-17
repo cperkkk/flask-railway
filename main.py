@@ -3,6 +3,7 @@ import os
 import requests
 import json
 from datetime import datetime
+from collections import defaultdict
 
 app = Flask(__name__)
 
@@ -223,12 +224,19 @@ def index():
 @app.route('/pre')
 def index_pre():
     x = requests.get('https://mainnet.zklighter.elliot.ai/api/v1/account?by=index&value=484').content
+    y = requests.get('https://mainnet.zklighter.elliot.ai/api/v1/account?by=index&value=24').content
 
     data = x
     j = json.loads(data)
     account = j['accounts'][0]
     positions = account['positions']
     total_asset_value = float(account['total_asset_value'])
+
+    data2 = y
+    j2 = json.loads(data2)
+    account2 = j['accounts'][0]
+    positions2 = accounts2['positions']
+    total_asset_value2 = float(account2['total_asset_value'])
 
     def calc_leverage(imf):
         return 1 / (float(imf) / 100)
@@ -259,7 +267,20 @@ def index_pre():
             active_positions.append(pos)
 
     active_positions.sort(key=lambda x: abs(float(x['position_value'])), reverse=True)
+    
+    
+    active_positions2 = []
+    for pos in positions2:
+        position2 = float(pos['position'])
+        if position != 0:
+            active_positions2.append(pos)
 
+    d_ff = defaultdict(lambda:0)
+    for pos in active_positions2:
+        symbol = pos['symbol']
+        pos_value = pos['position_value']
+        d_ff[symbol] = pos_value / total_asset_value2
+        
     for pos in active_positions:
         symbol = pos['symbol']
         entry = float(pos['avg_entry_price'])
@@ -300,6 +321,7 @@ def index_pre():
 
         st += '\n'
         st += f'├ Value: ${pos_value:,.2f}\n'
+        st += f'├ Expectation: ${total_asset_value * d_ff[symbol]:,.2f}\n'
         st += f'├ PnL: {pnl_emoji} {pnl_sign}${pnl:,.2f} ({pnl_sign}{pnl_percent:.2f}%)\n'
         st += f'└ Liquidation: ${liq_price:,.2f}\n\n'
 
