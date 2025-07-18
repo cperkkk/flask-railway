@@ -253,6 +253,7 @@ def index_pre():
     # Build display string and track current positions
     st = ''
     st += f'<b>💰 Account Value: ${total_asset_value:,.2f}</b>\n'
+    st += f'<b>💰 Account Value Ratio: ${total_asset_value2/total_asset_value:,.2f}</b>\n'
     st += f'<i>Updated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}</i>\n'
     st += '━━━━━━━━━━━━━━━━━━━━━━\n\n'
 
